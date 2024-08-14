@@ -1,12 +1,14 @@
-import '@mantine/core/styles.css'
 import { MantineProvider } from '@mantine/core'
+import '@mantine/core/styles.css'
+import '@xyflow/react/dist/style.css'
+
+import EvaluationLogs from './EvaluationLogs/EvaluationLogs'
 import { theme } from './theme'
-import EvaluationTable from './EvaluationTable'
 
 export default function App() {
 	return (
-		<MantineProvider theme={theme}>
-			<EvaluationTable />
+		<MantineProvider theme={theme} defaultColorScheme='dark'>
+			<EvaluationLogs />
 		</MantineProvider>
 	)
 }

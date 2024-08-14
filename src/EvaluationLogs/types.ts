@@ -1,6 +1,7 @@
 export interface EvaluationLog {
+	id: string
 	question?: string
-	ground_truth?: string
+	groundTruth?: string
 	answer?: string
 	contexts?: string
 	faithfulness?: number
