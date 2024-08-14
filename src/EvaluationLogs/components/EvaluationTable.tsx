@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react'
+import React, { FC, useMemo, useState } from 'react'
 
 import {
 	ColumnDef,
 	flexRender,
 	getCoreRowModel,
+	getSortedRowModel,
+	SortingState,
 	useReactTable,
 } from '@tanstack/react-table'
 
@@ -12,24 +14,31 @@ import { truncate } from '../../utils'
 import { useEvaluationLogs } from '../context/EvaluationLogs.context'
 import { EvaluationLog } from '../types'
 
-const EvaluationTable: React.FC = () => {
+const EvaluationTable: FC = () => {
 	const { evaluationData: data } = useEvaluationLogs()
+	const [sorting, setSorting] = useState<SortingState>([])
 
 	const columns = useMemo<ColumnDef<any>[]>(
 		() => [
 			{
 				header: 'Question',
 				accessorKey: 'question',
+				enableSorting: false,
+
 				cell: (info) => truncate(info.getValue() as string) || 'N/A',
 			},
 			{
 				header: 'Ground Truth',
 				accessorKey: 'groundTruth',
+				enableSorting: false,
+
 				cell: (info) => truncate(info.getValue() as string) || 'N/A',
 			},
 			{
 				header: 'Answer',
 				accessorKey: 'answer',
+				enableSorting: false,
+
 				cell: (info) => truncate(info.getValue() as string) || 'N/A',
 			},
 			{
@@ -39,9 +48,12 @@ const EvaluationTable: React.FC = () => {
 					info.getValue() !== undefined
 						? (info.getValue() as number).toFixed(6)
 						: 'N/A',
+				enableSorting: true,
 			},
 			{
 				header: 'Actions',
+				enableSorting: false,
+
 				cell: (info) => {
 					return <RunDrawer selectedRow={info.row.original} />
 				},
@@ -68,6 +80,12 @@ const EvaluationTable: React.FC = () => {
 		data: filteredData,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		onSortingChange: setSorting,
+		state: {
+			sorting,
+		},
+		maxMultiSortColCount: 1,
 	})
 
 	if (!data) {
@@ -86,6 +104,11 @@ const EvaluationTable: React.FC = () => {
 										key={header.id}
 										colSpan={header.colSpan}
 										className='px-4 pr-2 py-4 font-medium text-left'
+										onClick={header.column.getToggleSortingHandler()}
+										style={{
+											userSelect: 'none',
+											cursor: header.column.getCanSort() && 'pointer',
+										}}
 									>
 										{header.isPlaceholder
 											? null
